@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "wasm": "wasm-intro",
+    "default": "wasm-intro"
+  }
+}

@@ -1,52 +1,48 @@
 <!doctype html>
 <html>
-
-<head>
+    <head>
+        <title>Tiled Mandelbrot - Christopher M. Beam</title>
+    </head>
     <style>
-        html,
-        body {
-            height: 100%;
+        html, body, #canvas {
+            height: 100vh;
+            width: 100vw;
             margin: 0;
             padding: 0;
-        }
-
-        .canvas {
-            width: 100vw;
-            height: 100vh;
+            overflow-y: hidden;
+            background: #800;
         }
     </style>
-</head>
+    <body>
+        <canvas id="canvas"></canvas>
+        <script>
+            // overrides emscripten's default module instantiation
+            var Module = {};
+            Module.postRun = () => {
+                const canvas = document.getElementById('canvas');
+                const context = canvas.getContext('2d');
 
-<body>
-    <canvas id="canvas" class="canvas"></canvas>
-    <script src="mandelbrot.js"></script>
-    <script>
-        Module.addOnPostRun(() => {
-            const canvas = document.getElementById('canvas');
-            const context = canvas.getContext('2d');
-
-            // Canvas resizing from http://stackoverflow.com/a/43364730/2142626
-            const width = canvas.clientWidth;
-            const height = canvas.clientHeight;
-            if (canvas.width !== width || canvas.height !== height) {
-                canvas.width = width;
-                canvas.height = height;
-            }
-
-            const mandelbrot = new Module.Mandelbrot(width, height, 1, -0.5, 0);
-
-            function drawTile() {
-                const tile = mandelbrot.nextTile();
-                if (tile) {
-                    const imageData = new ImageData(new Uint8ClampedArray(tile.data), tile.width, tile.height);
-                    context.putImageData(imageData, tile.x, tile.y);
-                    window.requestAnimationFrame(drawTile);
+                // Canvas resizing from http://stackoverflow.com/a/43364730/2142626
+                const width = canvas.clientWidth;
+                const height = canvas.clientHeight;
+                if (canvas.width !== width || canvas.height !== height) {
+                    canvas.width = width;
+                    canvas.height = height;
                 }
-            }
-            window.requestAnimationFrame(drawTile);
 
-        });
-    </script>
-</body>
+                const mandelbrot = new Module.Mandelbrot(width, height, 1, -0.5, 0);
 
+                function drawTile() {
+                    const tile = mandelbrot.nextTile();
+                    if (tile) {
+                        const imageData = new ImageData(new Uint8ClampedArray(tile.data), tile.width, tile.height);
+                        context.putImageData(imageData, tile.x, tile.y);
+                        window.requestAnimationFrame(drawTile);
+                    }
+                }
+                window.requestAnimationFrame(drawTile);
+            };
+        </script>
+        <script src="mandelbrot.js"></script>
+    </body>
 </html>
